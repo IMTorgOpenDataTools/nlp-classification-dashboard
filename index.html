@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="./frontend/style.css">
+
+<body>
+    <h1>Classification Outcome Dashboard</h1>
+
+    <!--TODO: update dropdown with data files, as necessary-->
+    <form> <b>Data selected: </b>
+        <select id="ddlViewBy">
+            <option value="./data/sim_result.json" selected="selected">simulated</option>
+        </select>
+    </form>
+
+    <div id="guide" class="guide"></div>
+
+    <div class="column">
+        <div id="chart"></div>
+        <div id="table">
+            <div id="SelectedCount">(No rows are selected</div>
+            <table>
+                <tr>
+                    <th>Id</th>
+                    <th>Text</th>
+                    <th>Actual Outcome</th>
+                    <th>Predicted Probability</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!--load external dependencies-->
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.3.0/markdown-it.min.js"></script>
+    <!--useful math libs
+        * numjs
+        * stdlib-js
+    -->
+    <!--load internal dependencies-->
+    <script src="./frontend/dualaxis.js"></script>
+    <script src="./frontend/histogram.js"></script>
+    <script src="./frontend/matrix.js"></script>
+    <script src="./frontend/markdown.js"></script>
+
+    <script>
+        setMarkdownGuide()
+
+        
+            //layout
+            var margin = {
+                    top: 20,
+                    right: 200,
+                    bottom: 80,
+                    left: 50
+                },
+                svg_width = 700,
+                svg_height = 1500,
+                //width = svg_width - margin.left - margin.right,
+                //height = svg_height - margin.top - margin.bottom,
+                number_of_plots = 4,
+                plot_width = svg_width - margin.left - margin.right,
+                plot_height = (svg_height / number_of_plots) - margin.top - margin.bottom
+
+            //svg
+            var svg = d3.select("#chart").select("svg")
+            if (svg.selectChild()) {
+                svg.remove()
+            }
+
+            var svg = d3.select("#chart").append("svg")
+                .attr("viewBox", "0 0 " + svg_width + " " + svg_height)
+
+            //plot A
+            var Awidth = plot_width,
+                Aheight = plot_height
+
+            AplotArea = d3.select("svg").append("g")
+                .attr("id", "PlotA")
+                .attr("width", Awidth)
+                .attr("height", Aheight)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+            //plot B
+            var Bwidth = plot_width,
+                Bheight = plot_height
+                BheightOffset = margin.top + margin.bottom + Bheight
+                Bbottom = Aheight + margin.top + margin.bottom + Bheight
+
+            BplotArea = d3.select("svg").append("g")
+                .attr("id", "PlotB")
+                .attr("width", Bwidth)
+                .attr("height", Bheight)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + BheightOffset + ")")
+
+             //plot B
+            var Cwidth = plot_width,
+                Cheight = plot_height
+                CheightOffset = 2 * (margin.top + margin.bottom + Cheight)
+                //Cbottom = Aheight + margin.top + margin.bottom + Cheight
+
+            CplotArea = d3.select("svg").append("g")
+                .attr("id", "PlotC")
+                .attr("width", Cwidth)
+                .attr("height", Cheight)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + CheightOffset + ")")
+
+            //plot D
+            var Dwidth = plot_width,
+                Dheight = plot_height
+
+            DplotArea = d3.select("svg").append("g")
+                .attr("id", "PlotD")
+                .attr("width", Dwidth)
+                .attr("height", Dheight)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + 3 * (plot_height + margin.top + margin.bottom) + ")")
+
+            DplotArea.append("g")
+                .attr("id", "PlotD_Score")
+                .attr("transform", "translate( 0, 0)")
+
+            DplotArea.append("g")
+                .attr("id", "PlotD_Table")
+                .attr("transform", "translate(" + 50 + ", 75)")
+
+            DplotArea.append("g")
+                .attr("id", "PlotD_Key")
+                .attr("transform", "translate(" + Dwidth + ", 75)")
+
+
+
+
+
+
+        function runGraph(dataFile) {
+            d3.json(dataFile).then(function(data) {
+
+                //inital state
+                var initial_idx = d3.maxIndex(data, function(d) {
+                        return d.f1score
+                    }),
+                    initial = data[initial_idx]
+                console.log(`Maximum F1Score is ${initial.f1score}, at record index ${initial_idx}`)
+                console.log(initial)
+
+                //format the data
+                data.forEach(function(d) {
+                    d.id = +d.id
+                    d.text = d.text
+                    d.actualy = +d.actualy
+                    d.yhat = +d.yhat
+
+                    d.threshold = +d.threshold
+                    d.precision = +d.precision
+                    d.recall = +d.recall
+                    d.f1score = +d.f1score
+                    d.support = d.support
+
+                    d.tp = +d.tp
+                    d.tn = +d.tn
+                    d.fp = +d.fp
+                    d.fn = +d.fn
+                })
+
+                //A
+                var Ascales = DualYaxis({
+                    container: '#PlotA',
+                    height: Aheight,
+                    width: Awidth,
+                    margin: margin,
+                    data: data,
+                    xData: 'threshold',
+                    y1Data: 'precision',
+                    y2Data: 'recall',
+                    labels: {
+                        y1Data: 'precision',
+                        y2Data: 'recall'
+                    },
+                    interaction: true
+                })
+
+                //C
+                var Cscales = DualYaxis({
+                    container: '#PlotC',
+                    height: Cheight,
+                    width: Cwidth,
+                    margin: margin,
+                    data: data,
+                    xData: 'recall',
+                    y1Data: 'precision',
+                    y2Data: 'f1score',
+                    labels: {
+                        y1Data: 'prcurve',
+                        y2Data: 'f1score'
+                    },
+                    interaction: true
+                })
+
+                //B - D
+                console.log(initial)
+                setPlot(d=initial, data=data)
+
+                AplotArea.append("rect")
+                    .attr("width", Awidth)
+                    .attr("height", Aheight)
+                    .style("fill", "none")
+                    .style("pointer-events", "all")
+                    .on("mouseover", function() {
+                        Ascales.focus.style("display", null)
+                        Cscales.focus.style("display", null)
+                    })
+                    .on("mouseout", function(){
+                        Ascales.focus.style("display", null)
+                        Cscales.focus.style("display", null)
+                    })
+                    .on("mouseover", mousemove)
+                
+                
+
+                function mousemove(){
+                    const bisectThreshold = d3.bisector(function(d){
+                        return d.threshold
+                    }).left
+                    var data_sorted = data.slice().sort((a, b) => d3.ascending(a.threshold, b.threshold))
+
+                    var x0 = Ascales.x.invert(d3.pointer(event, this)[0])
+                    var i = bisectThreshold(data_sorted, x0)
+
+                    var d0 = data_sorted[i-1] != undefined ? data_sorted[i-1] : data_sorted[0]
+                    var d1 = data_sorted[i] != undefined ? data_sorted[i] : data_sorted[(data_sorted.length - 1)]
+                    var d = x0 - d0.threshold > d1.threshold - x0 ? d1 : d0
+
+                    // Plot A
+                    Ascales.focus.select("circle.y1")
+                        .attr("transform", "translate(" + Ascales.x(d.threshold) + "," + Ascales.y1(d.precision) + ")")
+                    
+                    Ascales.focus.select("circle.y2")
+                        .attr("transform", "translate(" + Ascales.x(d.threshold) + "," + Ascales.y2(d.recall) + ")")
+
+                    Ascales.focus.select("text.y6")
+                        .attr("transform", "translate(" + Ascales.x(d.threshold) + "," + Ascales.y1(d.precision) + ")")
+                        .text(`Threshold: ${d.threshold.toFixed(3)}`)
+
+                    Ascales.focus.select(".x")
+                        .attr(`transform`, `translate( ${Ascales.x(d.threshold)} , ${Ascales.y1(d.precision)} )`)
+                        .attr("y2", Bbottom - Ascales.y1(d.precision))
+
+                    Ascales.focus.select(".y")
+                        .attr(`transform`, `translate( ${Awidth * -1} , ${Ascales.y1(d.precision)} )`)
+                        .attr("x2", Awidth + Awidth)
+
+                    // Plot C
+                    Cscales.focus.select("circle.y3")
+                        .attr("transform", "translate(" + Cscales.x(d.recall) + "," + Cscales.y1(d.precision) + ")")
+                    
+                    Cscales.focus.select("circle.y4")
+                        .attr("transform", "translate(" + Cscales.x(d.recall) + "," + Cscales.y2(d.f1score) + ")")
+
+
+                    // All plots
+                    setPlot(d=d, data=data)
+                   
+                }
+            })
+        }
+
+        function setPlot(d, data){
+
+                // B
+                Histogram({
+                    container: '#PlotB',
+                    height: Bheight,
+                    width: Bwidth,
+                    data: data,
+                    threshold: d["threshold"],
+                    colorActualPos: {
+                        light: "blue",
+                        dark: "#404080"
+                    },
+                    colorActualNeg: {
+                        light: "orange",
+                        dark: "#cc8400"
+                    },
+                    interaction: false
+                })
+
+
+                // D confusion matrix
+                var confusionMatrix = [
+                    [d['tp'], d['fn']],
+                    [d['fp'], d['tn']]
+                ]
+                var labels = ["Positive", "Negative"]
+                Matrix({
+                    container: "#PlotD_Table",
+                    legend_container: "#PlotD_Key",
+                    data: confusionMatrix,
+                    labels: labels,
+                    start_color: "#ffffff",
+                    end_color: "#cc8400"
+                })
+
+                var computedData = []
+                computedData.push({
+                    "F1-Score": d['f1score'].toFixed(3),
+                    "Precision": d['precision'].toFixed(3),
+                    "Recall": d['recall'].toFixed(3),
+                    "Threshold": d['threshold'].toFixed(3),
+                    "Support": d['support']
+                })
+
+                // score table
+                var table = tabulate(computedData, ["F1-Score", "Precision", "Recall", "Threshold", "Support"], "#PlotD_Score")
+        }
+        
+
+        // initial graph
+        var newData = "./data/sim_result.json"
+        console.log(`Data file used: ${newData}`)
+        runGraph(newData)
+
+        // handle on change of data file selection
+        d3.select("#ddlViewBy")
+            .on("change", function() {
+                var newData = d3.select(this).property("value")
+                console.log(`Data file used: ${newData}`)
+                runGraph(newData)
+            })
+    </script>
+
+</body>

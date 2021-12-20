@@ -1,0 +1,84 @@
+body {
+    font: 12px Arial;
+}
+
+div.column {
+    width: 500px;
+    margin: auto;
+    border: 1px solid lightgray;
+    float: left;
+}
+
+div.guide {
+    width: 300px;
+    margin: auto;
+    margin-top: 50px;
+    padding: 5px;
+    border: 1px solid lightgray;
+    float: left;
+}
+
+
+/* table */
+
+table {
+    border-collapse: collapse;
+}
+
+td,
+th {
+    padding: 4px;
+    border: 1px solid black;
+    text-align: center;
+}
+
+tr:nth-child(even) {
+    background-color: #d9d9d9;
+}
+
+
+/*TODO: add style to text cell*/
+
+td.text {
+    text-align: left;
+}
+
+
+/*line*/
+
+.line {
+    fill: none;
+    stroke-width: 2px;
+}
+
+.line.precision {
+    stroke: blue;
+}
+
+circle.precision {
+    fill: blue;
+}
+
+.line.recall {
+    stroke: red;
+}
+
+circle.recall {
+    fill: red;
+}
+
+.line.prcurve {
+    stroke: orange;
+}
+
+circle.prcurve {
+    fill: orange;
+}
+
+.line.f1score {
+    stroke: green;
+}
+
+circle.f1score {
+    fill: green;
+}
