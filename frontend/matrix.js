@@ -163,6 +163,15 @@ function Matrix(options) {
         .text(function(d, i) { return d })
 
     //TODO: labels for "Model Result" and "Actual Outcomes"
+    labels.append("text").attr("x", -30).attr("y", 320).text("Model Classification").style("font-size", "15px").attr("alignment-baseline", "middle")
+    labels.append("text").attr("x", -80).attr("y", -10).text("Actual Outcome").style("font-size", "15px").attr("alignment-baseline", "middle")
+
+
+
+
+
+
+
 
     var check_key = d3.select(legend_container).selectAll("svg")
     if (check_key.selectChild().size() > 0) { return }

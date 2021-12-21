@@ -138,14 +138,14 @@ function Histogram(options) {
         .attr("cx", 0)
         .attr("cy", -10)
         .attr("r", 6)
-        .attr("fill", colorActualNeg['light'])
+        .attr("fill", colorActualNeg['dark'])
 
     key.append("circle")
         //.attr("class", labels.y2Data)
         .attr("cx", 0)
         .attr("cy", 10)
         .attr("r", 6)
-        .attr("fill", colorActualPos['light'])
+        .attr("fill", colorActualPos['dark'])
 
     key.append("text").attr("x", 10).attr("y", -10).text(capitalize("Actual Negative")).style("font-size", "15px").attr("alignment-baseline", "middle")
     key.append("text").attr("x", 10).attr("y", 10).text(capitalize("Actual Positive")).style("font-size", "15px").attr("alignment-baseline", "middle")

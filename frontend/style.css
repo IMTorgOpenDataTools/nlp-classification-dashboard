@@ -59,33 +59,33 @@ td.text {
 }
 
 .line.precision {
-    stroke: blue;
+    stroke: steelblue;
 }
 
 circle.precision {
-    fill: blue;
+    fill: steelblue;
 }
 
 .line.recall {
-    stroke: red;
+    stroke: rgb(132, 180, 70)
 }
 
 circle.recall {
-    fill: red;
+    fill: rgb(132, 180, 70);
 }
 
 .line.prcurve {
-    stroke: orange;
+    stroke: rgb(135,144, 125);
 }
 
 circle.prcurve {
-    fill: orange;
+    fill: rgb(135,144, 125);
 }
 
 .line.f1score {
-    stroke: green;
+    stroke: rgb(68, 48, 99)
 }
 
 circle.f1score {
-    fill: green;
+    fill: rgb(68, 48, 99)
 }
