@@ -22,9 +22,6 @@ function Matrix(options) {
     var TableSvg = d3.select(container)
     //if (TableSvg.selectChild().size() > 0) {
 
-
-
-
     
     // Update if it currently exists
     if(update != null){
@@ -44,10 +41,6 @@ function Matrix(options) {
 
         return
     }
-
-
-
-
 
 
 

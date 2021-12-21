@@ -15,7 +15,7 @@ function Histogram(options) {
     var hover_correction = 0.025
 
 
-    // Update if it is available
+    // Update if it is currently available
     if(update != null){
     
         //append the bar rectangles to the svg element
@@ -33,12 +33,6 @@ function Histogram(options) {
 
         return
     }
-
-
-
-
-
-
 
 
 
