@@ -45,6 +45,6 @@ python3 -m http.server 9000
 
 ## ToDo
 
-* initialize interaction line at max f1score
+* ~~initialize interaction line at max f1score~~ => just add a solid line
 * wide layout format
 * standalone web application

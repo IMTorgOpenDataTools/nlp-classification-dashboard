@@ -7,9 +7,41 @@ function Histogram(options) {
         threshold = options.threshold,
         colorActualPos = options.colorActualPos,
         colorActualNeg = options.colorActualNeg,
-        interaction = options.interaction
+        interaction = options.interaction,
+        update = options.update
 
     if (!data) { throw new Error('Please pass data') }
+
+    var hover_correction = 0.025
+
+
+    // Update if it is available
+    if(update != null){
+    
+        //append the bar rectangles to the svg element
+        update.NegBars
+            .style("fill", function(d) { 
+                if (d.x0 + hover_correction < threshold) { return update.colorActualNeg['light'] } 
+                else { return update.colorActualNeg['dark'] } })
+            .style("opacity", 0.6)
+
+        update.PosBars
+            .style("fill", function(d) { 
+                if (d.x0 + hover_correction < threshold) { return update.colorActualPos['light'] } 
+                else { return update.colorActualPos['dark'] } })
+            .style("opacity", 0.6)
+
+        return
+    }
+
+
+
+
+
+
+
+
+
 
     const createSeq = (len, val) => {
         var adj_len = len + 1
@@ -48,7 +80,7 @@ function Histogram(options) {
 
     hover_correction = 0.025
         //append the bar rectangles to the svg element
-    HistSvg.append("g").selectAll("rect")
+    var NegBars = HistSvg.append("g").selectAll("rect")
         .data(bins1)
         .enter().append("rect")
         .attr("class", "bar neg")
@@ -59,7 +91,7 @@ function Histogram(options) {
         .style("fill", function(d) { if (d.x0 + hover_correction < threshold) { return colorActualNeg['light'] } else { return colorActualNeg['dark'] } })
         .style("opacity", 0.6)
 
-    HistSvg.append("g").selectAll("rect")
+    var PosBars = HistSvg.append("g").selectAll("rect")
         .data(bins2)
         .enter().append("rect")
         .attr("class", "bar pos")
@@ -99,7 +131,11 @@ function Histogram(options) {
 
     if (interaction) {
         //add brushing
-        HistSvg.append("g").call(d3.brushX().extent([0, 0], [width, height]).on("start brush", brushed))
+        HistSvg.append("g").call(d3.brushX()
+                .extent([
+                    [0, 0], 
+                    [width, height]
+                ]).on("start brush", brushed))
 
         function brushed(event) {
             var low = x.invert(event.selection[0]),
@@ -136,7 +172,6 @@ function Histogram(options) {
                 d3.select("#table").selectAll(".row_data").remove()
             }
         }
-
+        return {NegBars, PosBars, colorActualNeg, colorActualPos}
     }
-
 }

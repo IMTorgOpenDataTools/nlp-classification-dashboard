@@ -55,8 +55,7 @@
                 },
                 svg_width = 700,
                 svg_height = 1500,
-                //width = svg_width - margin.left - margin.right,
-                //height = svg_height - margin.top - margin.bottom,
+
                 number_of_plots = 4,
                 plot_width = svg_width - margin.left - margin.right,
                 plot_height = (svg_height / number_of_plots) - margin.top - margin.bottom
@@ -165,7 +164,7 @@
                     d.fn = +d.fn
                 })
 
-                //A
+                // A
                 var Ascales = DualYaxis({
                     container: '#PlotA',
                     height: Aheight,
@@ -182,7 +181,7 @@
                     interaction: true
                 })
 
-                //C
+                // C
                 var Cscales = DualYaxis({
                     container: '#PlotC',
                     height: Cheight,
@@ -199,10 +198,13 @@
                     interaction: true
                 })
 
-                //B - D
-                console.log(initial)
-                setPlot(d=initial, data=data)
+                // B, D
+                var Update = setPlot(d=initial, data=data, update=null)
 
+
+
+
+                // Interaction
                 AplotArea.append("rect")
                     .attr("width", Awidth)
                     .attr("height", Aheight)
@@ -216,7 +218,7 @@
                         Ascales.focus.style("display", null)
                         Cscales.focus.style("display", null)
                     })
-                    .on("mouseover", mousemove)
+                    .on("mousemove", mousemove)
                 
                 
 
@@ -260,17 +262,17 @@
                         .attr("transform", "translate(" + Cscales.x(d.recall) + "," + Cscales.y2(d.f1score) + ")")
 
 
-                    // All plots
-                    setPlot(d=d, data=data)
+                    // B, D
+                    setPlot(d=d, data=data, update=Update)
                    
                 }
             })
         }
 
-        function setPlot(d, data){
+        function setPlot(d, data, update=null){
 
                 // B
-                Histogram({
+                var Bupdate = Histogram({
                     container: '#PlotB',
                     height: Bheight,
                     width: Bwidth,
@@ -284,7 +286,8 @@
                         light: "orange",
                         dark: "#cc8400"
                     },
-                    interaction: false
+                    interaction: true,
+                    update: (update != null ? update.Bupdate : null)
                 })
 
 
@@ -294,13 +297,14 @@
                     [d['fp'], d['tn']]
                 ]
                 var labels = ["Positive", "Negative"]
-                Matrix({
+                var Dupdate = Matrix({
                     container: "#PlotD_Table",
                     legend_container: "#PlotD_Key",
                     data: confusionMatrix,
                     labels: labels,
                     start_color: "#ffffff",
-                    end_color: "#cc8400"
+                    end_color: "#cc8400",
+                    update: (update != null ? update.Dupdate : null)
                 })
 
                 var computedData = []
@@ -314,6 +318,8 @@
 
                 // score table
                 var table = tabulate(computedData, ["F1-Score", "Precision", "Recall", "Threshold", "Support"], "#PlotD_Score")
+
+                return {'Bupdate': Bupdate,'Dupdate': Dupdate}
         }
         
 

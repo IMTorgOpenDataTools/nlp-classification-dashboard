@@ -7,7 +7,8 @@ function Matrix(options) {
         legend_container = options.legend_container,
         labelsData = options.labels,
         startColor = options.start_color,
-        endColor = options.end_color
+        endColor = options.end_color,
+        update = options.update
 
     var widthLegend = 100
 
@@ -16,6 +17,40 @@ function Matrix(options) {
     if (!Array.isArray(data) || !data.length || !Array.isArray(data[0])) {
         throw new Error("It should be a 2-D array")
     }
+
+    // check if if it currently exists
+    var TableSvg = d3.select(container)
+    //if (TableSvg.selectChild().size() > 0) {
+
+
+
+
+    
+    // Update if it currently exists
+    if(update != null){
+
+        var row = TableSvg.selectAll(".row") 
+        var cell = row.selectAll(".cell")
+
+        cell.select("text")
+            .style("fill", function(d, i) {
+            return d >= maxValue / 2 ? "white" : "black"
+            })
+            .text(function(d, i) { return d })
+
+        row.selectAll(".cell")
+            .data(function(d, i) { return data[i] })
+            .style("fill", update.colorMap) 
+
+        return
+    }
+
+
+
+
+
+
+
 
     var maxValue = d3.max(data, function(layer) {
         return d3.max(layer, function(d) {
@@ -32,16 +67,6 @@ function Matrix(options) {
     var numrows = data.length,
         numcols = data[0].length
 
-    // check if if it currently exists
-    var TableSvg = d3.select(container)
-    if (TableSvg.selectChild()) { TableSvg.selectAll("*").remove() }
-
-    var background = TableSvg.append("rect")
-        .style("stroke", "black")
-        .style("stroke-width", "2px")
-        .attr("width", width)
-        .attr("height", height)
-
     var x = d3.scaleBand()
         .domain(d3.range(numcols))
         .range([0, width])
@@ -53,6 +78,12 @@ function Matrix(options) {
     var colorMap = d3.scaleLinear()
         .domain([minValue, maxValue])
         .range([startColor, endColor])
+
+    var background = TableSvg.append("rect")
+        .style("stroke", "black")
+        .style("stroke-width", "2px")
+        .attr("width", width)
+        .attr("height", height)
 
     var row = TableSvg.selectAll(".row")
         .data(data)
@@ -181,6 +212,8 @@ function Matrix(options) {
         .attr("class", "y axis")
         .attr("transform", "translate(41," + 0 + ")")
         .call(yAxis)
+
+    return {"colorMap": colorMap}
 }
 
 
