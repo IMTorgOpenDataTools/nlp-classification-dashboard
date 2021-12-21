@@ -2,18 +2,25 @@ body {
     font: 12px Arial;
 }
 
-div.column {
+div.guide {
+    width: 300px;
+    margin: auto;
+    margin-top: 50px;
+    padding: 5px;
+    border: 1px solid lightgray;
+    float: left;
+}
+
+#column1 {
     width: 500px;
     margin: auto;
     border: 1px solid lightgray;
     float: left;
 }
 
-div.guide {
-    width: 300px;
+#column2 {
+    width: 700px;
     margin: auto;
-    margin-top: 50px;
-    padding: 5px;
     border: 1px solid lightgray;
     float: left;
 }

@@ -123,6 +123,40 @@ function Histogram(options) {
         .attr("y", height + 30)
         .text("Predicted Probability")
 
+
+
+    // Legend
+    var xPos = width + (200 / 10),//(margin.right / 4),
+        yPos = height / 2
+
+    var key = HistSvg.append("g")
+        .attr("class", "legend")
+        .attr("transform", "translate( " + xPos + "," + yPos + ")")
+
+    key.append("circle")
+        //.attr("class", labels.y1Data)
+        .attr("cx", 0)
+        .attr("cy", -10)
+        .attr("r", 6)
+        .attr("fill", colorActualNeg['light'])
+
+    key.append("circle")
+        //.attr("class", labels.y2Data)
+        .attr("cx", 0)
+        .attr("cy", 10)
+        .attr("r", 6)
+        .attr("fill", colorActualPos['light'])
+
+    key.append("text").attr("x", 10).attr("y", -10).text(capitalize("Actual Negative")).style("font-size", "15px").attr("alignment-baseline", "middle")
+    key.append("text").attr("x", 10).attr("y", 10).text(capitalize("Actual Positive")).style("font-size", "15px").attr("alignment-baseline", "middle")
+
+
+
+
+
+
+
+
     if (interaction) {
         //add brushing
         HistSvg.append("g").call(d3.brushX()

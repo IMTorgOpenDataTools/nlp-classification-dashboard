@@ -14,20 +14,26 @@
 
     <div id="guide" class="guide"></div>
 
-    <div class="column">
-        <div id="chart"></div>
+    <div id="column1">
+        <div id="chart1"></div>
+    </div>
+    <div id="column2">
+        <div id="chart2"></div>
         <div id="table">
-            <div id="SelectedCount">(No rows are selected</div>
-            <table>
-                <tr>
-                    <th>Id</th>
-                    <th>Text</th>
-                    <th>Actual Outcome</th>
-                    <th>Predicted Probability</th>
-                </tr>
-            </table>
+                <div id="SelectedCount">(No rows are selected</div>
+                <table>
+                    <tr>
+                        <th>Id</th>
+                        <th>Text</th>
+                        <th>Actual Outcome</th>
+                        <th>Predicted Probability</th>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
+
+    
 
     <!--load external dependencies-->
     <script src="https://d3js.org/d3.v6.js"></script>
@@ -43,37 +49,42 @@
     <script src="./frontend/markdown.js"></script>
 
     <script>
-        setMarkdownGuide()
-
         
-            //layout
+            // svg1 layout
             var margin = {
                     top: 20,
                     right: 200,
                     bottom: 80,
                     left: 50
                 },
-                svg_width = 700,
-                svg_height = 1500,
+                svg1_width = 500,
+                svg1_height = 1300,
 
-                number_of_plots = 4,
-                plot_width = svg_width - margin.left - margin.right,
-                plot_height = (svg_height / number_of_plots) - margin.top - margin.bottom
+                svg1_number_of_plots = 5,
+                plot1_width = svg1_width - margin.left - margin.right,
+                plot1_height = (svg1_height / svg1_number_of_plots) - margin.top - margin.bottom
 
-            //svg
-            var svg = d3.select("#chart").select("svg")
-            if (svg.selectChild()) {
-                svg.remove()
-            }
+            // svg2 layout
+            var svg2_width = 600,
+                svg2_height = 300
 
-            var svg = d3.select("#chart").append("svg")
-                .attr("viewBox", "0 0 " + svg_width + " " + svg_height)
+                svg2_number_of_plots = 1,
+                plot2_width = svg2_width - margin.left - margin.right,
+                plot2_height = (svg2_height / svg2_number_of_plots) - margin.top - margin.bottom
+
+
+
+
+
+            //svg1
+            var svg1 = d3.select("#chart1").append("svg")
+                .attr("viewBox", "0 0 " + svg1_width + " " + svg1_height)
 
             //plot A
-            var Awidth = plot_width,
-                Aheight = plot_height
+            var Awidth = 300,
+                Aheight = 200
 
-            AplotArea = d3.select("svg").append("g")
+            AplotArea = svg1.append("g")
                 .attr("id", "PlotA")
                 .attr("width", Awidth)
                 .attr("height", Aheight)
@@ -81,41 +92,28 @@
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
             //plot B
-            var Bwidth = plot_width,
-                Bheight = plot_height
+            var Bwidth = 300,
+                Bheight = 200
                 BheightOffset = margin.top + margin.bottom + Bheight
                 Bbottom = Aheight + margin.top + margin.bottom + Bheight
 
-            BplotArea = d3.select("svg").append("g")
+            BplotArea = svg1.append("g")
                 .attr("id", "PlotB")
                 .attr("width", Bwidth)
                 .attr("height", Bheight)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + BheightOffset + ")")
 
-             //plot B
-            var Cwidth = plot_width,
-                Cheight = plot_height
-                CheightOffset = 2 * (margin.top + margin.bottom + Cheight)
-                //Cbottom = Aheight + margin.top + margin.bottom + Cheight
-
-            CplotArea = d3.select("svg").append("g")
-                .attr("id", "PlotC")
-                .attr("width", Cwidth)
-                .attr("height", Cheight)
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + CheightOffset + ")")
-
             //plot D
-            var Dwidth = plot_width,
-                Dheight = plot_height
+            var Dwidth = 350,
+                Dheight = 1000
 
-            DplotArea = d3.select("svg").append("g")
+            DplotArea = svg1.append("g")
                 .attr("id", "PlotD")
                 .attr("width", Dwidth)
                 .attr("height", Dheight)
                 .append("g")
-                .attr("transform", "translate(" + margin.left + "," + 3 * (plot_height + margin.top + margin.bottom) + ")")
+                .attr("transform", "translate(" + margin.left + "," + 2.2 * (plot1_height + margin.top + margin.bottom) + ")")
 
             DplotArea.append("g")
                 .attr("id", "PlotD_Score")
@@ -128,6 +126,27 @@
             DplotArea.append("g")
                 .attr("id", "PlotD_Key")
                 .attr("transform", "translate(" + Dwidth + ", 75)")
+
+            
+
+
+
+            // svg2
+            var svg2 = d3.select("#chart2").append("svg")
+                .attr("viewBox", "0 0 " + svg2_width + " " + svg2_height)
+
+            //plot C
+            var Cwidth = plot2_width,
+                Cheight = plot2_height
+                CheightOffset = margin.top
+                //Cbottom = Aheight + margin.top + margin.bottom + Cheight
+
+            CplotArea = svg2.append("g")
+                .attr("id", "PlotC")
+                .attr("width", Cwidth)
+                .attr("height", Cheight)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + CheightOffset + ")")
 
 
 
@@ -322,6 +341,16 @@
                 return {'Bupdate': Bupdate,'Dupdate': Dupdate}
         }
         
+
+
+
+
+
+
+
+
+        // populate static elements
+        setMarkdownGuide()
 
         // initial graph
         var newData = "./data/sim_result.json"
