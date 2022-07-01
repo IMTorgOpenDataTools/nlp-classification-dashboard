@@ -3,6 +3,12 @@
 This repo contains code to process the output of an NLP classification model's test data,
 process it, and serve a dashboard with interactive visualizations for exploring outcomes.
 
+![dashboard](/image.png "Classification Results Dashboard")
+
+
+
+
+
 ## Prepare Input: Notebook
 
 ```
